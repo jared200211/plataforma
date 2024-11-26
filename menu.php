@@ -74,7 +74,8 @@ body {
                 </div>
                 <ul class="list_show">
                     <li class="list_inside">
-                        <a href="#" class="nav_link nav_link--inside">Nueva Cotizacion</a>
+                    <a href="#" class="nav_link nav_link--inside menu-option" data-page="nuevaCotizacion.php">Nueva Cotizacion</a>
+                       
                     </li>
                     <li class="list_inside">
                         <a href="#" class="nav_link nav_link--inside">Inventario Actual</a>
