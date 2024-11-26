@@ -15,13 +15,13 @@ body{
 }
 .nav{
 
-  width: 315px; 
+  width: 300px; 
 
 }
 .nav_link{
   color: #303440;
   display: block;
-
+  padding: 15px 0;
   text-decoration: none;
 }
 

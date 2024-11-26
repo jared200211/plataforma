@@ -149,7 +149,9 @@ body {
     </nav>
     
     <div id="content">
-       
+        <!-- Contenido dinámico se cargará aquí -->
+        <h1>Bienvenido a Grupo Ibarra</h1>
+        <p>Selecciona una opción del menú.</p>
     </div>
 
     <script src="./main.js"></script>
