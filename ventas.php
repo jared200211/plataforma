@@ -260,9 +260,7 @@ function eliminarProducto(button, importe) {
         alert("Por favor, agregue productos antes de realizar la venta.");
         return;
     }
-    
 
-    // Verifica los datos antes de enviarlos
     console.log("Datos enviados al servidor:", {
         vendedor: vendedor,
         tipo_pago: tipoPago,
@@ -270,40 +268,37 @@ function eliminarProducto(button, importe) {
         productosVenta: JSON.stringify(productosVenta) // Solo los productos de la tabla
     });
 
-   
-}
-
     // Enviar los datos de la venta al servidor
     $.ajax({
-    url: 'realizar_venta.php', // Ruta al archivo PHP para insertar la venta
-    method: 'POST',
-    data: {
-        vendedor: vendedor,
-        tipo_pago: tipoPago,
-        total: totalVenta,
-        productosVenta: JSON.stringify(productosVenta) // Solo los productos de la venta
-    },
-    success: function(response) {
-        console.log("Respuesta del servidor:", response);
-        
-        if (response.success) {  // Verificar que la venta fue exitosa
-            alert("Venta realizada con éxito. ID de venta: " + response.venta_id);
-            // Limpiar la venta
-            productosVenta = [];
-            tableBody.innerHTML = '';
-            totalVenta = 0;
-            totalElement.textContent = "$0.00";
-        } else {
-            alert("Error al realizar la venta: " + response.message);  // Mostrar el mensaje de error detallado
+        url: 'realizar_venta.php', // Ruta al archivo PHP para insertar la venta
+        method: 'POST',
+        data: {
+            vendedor: vendedor,
+            tipo_pago: tipoPago,
+            total: totalVenta,
+            productosVenta: JSON.stringify(productosVenta) // Solo los productos de la venta
+        },
+        success: function(response) {
+            console.log("Respuesta del servidor:", response);
+            
+            if (response.success) {  // Verificar que la venta fue exitosa
+                alert("Venta realizada con éxito.");
+                // Resetear los datos locales
+                totalVenta = 0;
+                productosVenta = [];
+                tableBody.innerHTML = '';
+                totalElement.textContent = `$${totalVenta.toFixed(2)}`;
+            } else {
+                alert("Error al realizar la venta: " + response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error en la solicitud:", error);
+            alert("Ocurrió un error al procesar la venta.");
         }
-    },
-    error: function(xhr, status, error) {
-        console.error("Error en la solicitud AJAX:", error);  // Mostrar cualquier error en la solicitud AJAX
-        alert("Error al realizar la venta.");
-    }
-});
+    });
+}); // <-- Esta llave cierra el addEventListener
 
-});
 </script>
 
 

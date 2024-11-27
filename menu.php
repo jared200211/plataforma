@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GRUPO IBARRA</title>
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+
  
     <style>
 
@@ -98,7 +100,8 @@ body {
                       
                     </li>
                     <li class="list_inside">
-                        <a href="#" class="nav_link nav_link--inside">Reporte Servicios</a>
+                    <a href="#" class="nav_link nav_link--inside menu-option" data-page="gastos.php">Reporte Gastos</a>
+                       
                     </li>
                 </ul>
             </li>
