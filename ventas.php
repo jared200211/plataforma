@@ -260,6 +260,7 @@ function eliminarProducto(button, importe) {
         alert("Por favor, agregue productos antes de realizar la venta.");
         return;
     }
+    
 
     // Verifica los datos antes de enviarlos
     console.log("Datos enviados al servidor:", {
@@ -268,6 +269,9 @@ function eliminarProducto(button, importe) {
         total: totalVenta,
         productosVenta: JSON.stringify(productosVenta) // Solo los productos de la tabla
     });
+
+   
+}
 
     // Enviar los datos de la venta al servidor
     $.ajax({
