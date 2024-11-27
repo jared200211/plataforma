@@ -83,7 +83,7 @@
             },
             dataType: 'json',
             success: function(response) {
-                console.log(response);
+                // console.log(response);
 
                 if (response.ventas.length === 0) {
                     $('#tableDataa').html('<tr><td colspan="5">No se encontraron ventas en el intervalo seleccionado.</td></tr>');
