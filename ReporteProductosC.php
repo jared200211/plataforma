@@ -1,34 +1,34 @@
 <?php
 date_default_timezone_set('America/Mexico_City');
-
-
 require_once("./ConexionGeneral.php");
 
 // Obtener los parámetros de búsqueda y fechas
-$buscar = isset($_POST['buscar']) ? $_POST['buscar'] : null;
+$buscar = isset($_POST['buscar']) ? '%' . $_POST['buscar'] . '%' : null;
 $fechaInicio = isset($_POST['fechaInicio']) ? $_POST['fechaInicio'] : null;
 $fechaFin = isset($_POST['fechaFin']) ? $_POST['fechaFin'] : null;
 
 // Construcción de la consulta SQL
-$sql = "SELECT id_venta, tipo_pago, vendedor, total, fecha_venta FROM ventas WHERE 1=1";
+$sql = "SELECT id_venta, id_producto, nombre_producto, cantidad, total_producto
+        FROM productos_venta
+        WHERE 1=1";
 
-// Filtrar por vendedor
+// Filtrar por búsqueda
 if ($buscar) {
-    $sql .= " AND vendedor LIKE :buscar";
+    $sql .= " AND nombre_producto LIKE :buscar";
 }
 
-// Filtrar por fechas, si las fechas están presentes
+// Filtrar por fechas
 if ($fechaInicio && $fechaFin) {
-    $sql .= " AND fecha_venta BETWEEN :fechaInicio AND :fechaFin";
+    $sql .= " AND DATE(fecha_venta) BETWEEN :fechaInicio AND :fechaFin";
 } elseif ($fechaInicio) {
-    $sql .= " AND fecha_venta >= :fechaInicio";
+    $sql .= " AND DATE(fecha_venta) >= :fechaInicio";
 } elseif ($fechaFin) {
-    $sql .= " AND fecha_venta <= :fechaFin";
+    $sql .= " AND DATE(fecha_venta) <= :fechaFin";
 }
 
 $stmt = $pdo->prepare($sql);
 
-// Vincular los parámetros
+// Vincular parámetros
 if ($buscar) {
     $stmt->bindParam(':buscar', $buscar);
 }
@@ -41,19 +41,18 @@ if ($fechaFin) {
 
 $stmt->execute();
 
-// Variables para almacenar los resultados de las ventas y el total vendido
+// Almacenar resultados y calcular el total vendido
 $ventas = [];
-$totalVendido = 0;
+$totalVendidoo = 0;
 
-// Obtenemos todas las filas y las sumamos a un array
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $ventas[] = $row;
-    $totalVendido += $row['total']; // Sumar el total de cada venta
+    $totalVendidoo += floatval($row['total_producto']); // Corregir la clave
 }
 
-// Devolvemos los datos como un array JSON (ventas y total)
+// Devolver resultados como JSON
+header('Content-Type: application/json; charset=utf-8');
 echo json_encode([
     'ventas' => $ventas,
-    'totalVendido' => $totalVendido // Total de ventas
+    'totalVendidoo' => $totalVendidoo
 ]);
-?>

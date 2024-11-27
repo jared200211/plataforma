@@ -51,13 +51,13 @@
             <thead>
                 <tr>
                     <th>ID Venta</th>
-                    <th>Tipo de Pago</th>
-                    <th>Vendedor</th>
+                    <th>ID Producto</th>
+                    <th>Nombre</th>
+                    <th>Cantidad</th>
                     <th>Total</th>
-                    <th>Fecha de Venta</th>
                 </tr>
             </thead>
-            <tbody id="tableDataa">
+            <tbody id="tableDataaP">
                 <!-- Las filas de la tabla se agregarán aquí dinámicamente -->
             </tbody>
         </table>
@@ -74,7 +74,7 @@
     // Función para cargar los datos de la tabla con filtros
     function loadTable(query = '', fechaInicio = '', fechaFin = '') {
         $.ajax({
-            url: 'ReporteVentasC.php',
+            url: 'ReporteProductosC.php',
             method: 'POST',
             data: {
                 buscar: query,
@@ -86,13 +86,13 @@
                 console.log(response);
 
                 if (response.ventas.length === 0) {
-                    $('#tableDataa').html('<tr><td colspan="5">No se encontraron ventas en el intervalo seleccionado.</td></tr>');
-                    $('#totalVendido').text('Total Vendido: $0.00');
+                    $('#tableDataaP').html('<tr><td colspan="5">No se encontraron ventas en el intervalo seleccionado.</td></tr>');
+                    $('#totalVendidoo').text('Total Vendido: $0.00');
                 } else {
                     // Cargar las ventas en la tabla
                     let rows = '';
                     response.ventas.forEach(function(venta) {
-                        let totalVenta = parseFloat(venta.total);
+                        let totalVenta = parseFloat(venta.total_producto);
                         if (isNaN(totalVenta)) {
                             totalVenta = 0;
                         }
@@ -100,26 +100,26 @@
                         rows += `
                             <tr>
                                 <td>${venta.id_venta}</td>
-                                <td>${venta.tipo_pago}</td>
-                                <td>${venta.vendedor}</td>
-                                <td>$${totalVenta.toFixed(2)}</td>
-                                <td>${venta.fecha_venta}</td>
+                                <td>${venta.id_producto}</td>
+                                <td>${venta.nombre_producto}</td>
+                                <td>${venta.cantidad}</td>
+                                    <td>$${totalVenta.toFixed(2)}</td>
                             </tr>
                         `;
                     });
-                    $('#tableDataa').html(rows);
+                    $('#tableDataaP').html(rows);
 
                     // Mostrar el total vendido
-                    let totalVendido = parseFloat(response.totalVendido);
-                    if (isNaN(totalVendido)) {
-                        totalVendido = 0;
+                    let totalVendidoo = parseFloat(response.totalVendidoo);
+                    if (isNaN(totalVendidoo)) {
+                        totalVendidoo = 0;
                     }
-                    $('#totalVendido').text('Total Vendido: $' + totalVendido.toFixed(2));
+                    $('#totalVendido').text('Total Vendido: $' + totalVendidoo.toFixed(2));
                 }
             },
             error: function(xhr, status, error) {
                 console.error('Error AJAX: ', status, error);
-                $('#tableDataa').html('<tr><td colspan="5">Hubo un problema al cargar los datos.</td></tr>');
+                $('#tableDataaP').html('<tr><td colspan="5">Hubo un problema al cargar los datos.</td></tr>');
             }
         });
     }

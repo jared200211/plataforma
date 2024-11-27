@@ -94,7 +94,8 @@ body {
                         <a href="#" class="nav_link nav_link--inside menu-option" data-page="ReporteVentas.php">Reporte Ventas</a>
                     </li>
                     <li class="list_inside">
-                        <a href="#" class="nav_link nav_link--inside">Reporte Productos</a>
+                    <a href="#" class="nav_link nav_link--inside menu-option" data-page="ReporteProductos.php">Reporte Productos</a>
+                      
                     </li>
                     <li class="list_inside">
                         <a href="#" class="nav_link nav_link--inside">Reporte Servicios</a>
