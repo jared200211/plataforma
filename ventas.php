@@ -287,17 +287,21 @@
         const hora = fechaHora.toLocaleTimeString('es-ES');
         
         // Título del ticket
-        doc.setFontSize(18);
-        doc.text('Grupo Industrial Ibarra', 14, 10);
-        
-        // Fecha y hora
-        doc.setFontSize(12);
-        doc.text(`Fecha: ${fecha}`, 14, 20);
-        doc.text(`Hora: ${hora}`, 14, 25);
+        doc.setFontSize(18);  
+doc.text('Grupo Industrial Ibarra', 14, 10);  // Nombre de la empresa
+doc.setFontSize(12);  
+doc.text('Calle Roque Rubio No.58', 14, 16);  // Dirección
+doc.text('Casa Blanca, Queretaro.', 14, 22);  // Localidad y ciudad
+
+
+doc.setFontSize(12);  
+doc.text(`Fecha: ${fecha}`, 14, 30);  
+doc.text(`Hora: ${hora}`, 14, 35);  
+
         
         // Información de la venta
-        doc.text('Detalle de la venta:', 14, 35);
-        let yPosition = 45; // Posición inicial para los productos
+        doc.text('Detalle de la venta:', 14, 40);
+        let yPosition = 50; // Posición inicial para los productos
         
         let cantidadProductos = productosSeleccionados.length;
         let totalVenta = 0;
