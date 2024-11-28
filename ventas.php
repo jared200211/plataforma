@@ -265,79 +265,97 @@
         });
     });
 
-    // Función para generar el PDF del ticket
     $('#btnTicket').click(function() {
-        // Asegurarse de que productosSeleccionados está definido
-        if (productosSeleccionados.length === 0) {
-            alert('No hay productos seleccionados para generar el ticket.');
-            return;
-        }
+    // Asegurarse de que productosSeleccionados está definido
+    if (productosSeleccionados.length === 0) {
+        alert('No hay productos seleccionados para generar el ticket.');
+        return;
+    }
 
-        // Crear un objeto PDF con jsPDF
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        // Definir la fecha y hora actual
-        const fechaHora = new Date();
-        const fecha = fechaHora.toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-        const hora = fechaHora.toLocaleTimeString('es-ES');
-        
-        // Título del ticket
-        doc.setFontSize(18);  
-doc.text('Grupo Industrial Ibarra', 14, 10);  // Nombre de la empresa
-doc.setFontSize(12);  
-doc.text('Calle Roque Rubio No.58', 14, 16);  // Dirección
-doc.text('Casa Blanca, Queretaro.', 14, 22);  // Localidad y ciudad
-
-
-doc.setFontSize(12);  
-doc.text(`Fecha: ${fecha}`, 14, 30);  
-doc.text(`Hora: ${hora}`, 14, 35);  
-
-        
-        // Información de la venta
-        doc.text('Detalle de la venta:', 14, 40);
-        let yPosition = 50; // Posición inicial para los productos
-        
-        let cantidadProductos = productosSeleccionados.length;
-        let totalVenta = 0;
-
-        // Recorrer los productos seleccionados y agregar al PDF
-        productosSeleccionados.forEach((producto, index) => {
-            doc.text(`${index + 1}. ${producto.nombre_producto}`, 14, yPosition);
-            doc.text(`Cantidad: ${producto.cantidad}`, 100, yPosition);
-            doc.text(`$${producto.total_producto.toFixed(2)}`, 140, yPosition);
-            yPosition += 10;
-            totalVenta += producto.total_producto;
-        });
-
-        // Total de la venta
-        doc.text(`Total: $${totalVenta.toFixed(2)}`, 14, yPosition + 10);
-        doc.text(`Cantidad de productos: ${cantidadProductos}`, 14, yPosition + 20);
-
-        // Descargar el PDF
-        doc.save('ticket_venta.pdf');
+    // Crear un objeto PDF con jsPDF
+    const { jsPDF } = window.jspdf;
+    // Crear un documento con un tamaño de 8 cm de ancho (80mm) y una altura predeterminada (A4)
+    const doc = new jsPDF({
+        unit: 'mm', // Utiliza milímetros como unidad
+        format: [80, 297] // Ancho de 8 cm (80 mm) y altura A4 (297 mm)
     });
 
-    // Limpiar los productos cuando el usuario hace clic en "Ok" del modal
-    $('#ventaExitosaModal').on('hidden.bs.modal', function() {
-        // Limpiar el tbody
-        $('#tableD').empty();
+    // Definir la fecha y hora actual
+    const fechaHora = new Date();
+    const fecha = fechaHora.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    const hora = fechaHora.toLocaleTimeString('es-ES');
+    
+    // Título del ticket (centrado)
+    doc.setFontSize(18);
+    const empresaNombre = 'Grupo Industrial Ibarra';
+    const direccion1 = 'Calle Roque Rubio No.58';
+    const direccion2 = 'Casa Blanca, Queretaro.';
+    
+    // Centramos el texto (calculando la posición)
+    const anchoPagina = 80; // Ancho del documento en mm
+    doc.text(empresaNombre, anchoPagina / 2, 10, { align: 'center' });
+    doc.setFontSize(12);
+    doc.text(direccion1, anchoPagina / 2, 16, { align: 'center' });
+    doc.text(direccion2, anchoPagina / 2, 22, { align: 'center' });
 
-        // Limpiar los campos de código, select de productos y cantidad
+    doc.setFontSize(12);  
+    doc.text(`Fecha: ${fecha}`, 14, 35);  
+    doc.text(`Hora: ${hora}`, 14, 40);  
+
+    // Información de la venta
+    doc.text('Detalle de la venta:', 14, 45);
+    
+    // Línea después de 'Detalle de la venta'
+    doc.line(10, 50, 70, 50); // Línea horizontal después de 'Detalle de la venta' en Y 50
+
+    let yPosition = 55; // Posición inicial para los productos
+    
+    let cantidadProductos = productosSeleccionados.length;
+    let totalVenta = 0;
+
+    // Recorrer los productos seleccionados y agregar al PDF
+    productosSeleccionados.forEach((producto, index) => {
+        // Verificar si precio_unitario está presente y es un número válido
+        const precioUnitario = parseFloat(producto.precio_unitario);
+        if (!isNaN(precioUnitario)) {
+            // Reducir el espacio entre productos con un paso menor (espaciado de 6 mm)
+            doc.setFontSize(10);
+            doc.text(`${index + 1}. ${producto.nombre_producto}`, 14, yPosition);
+            doc.text(`Cantidad: ${producto.cantidad}`, 100, yPosition);
+            doc.text(`$${precioUnitario.toFixed(2)}`, 60, yPosition); // Precio unitario
+            doc.text(`$${producto.total_producto.toFixed(2)}`, 160, yPosition); // Total del producto
+            yPosition += 6;  // Reducir espacio entre productos a 6 mm
+            totalVenta += producto.total_producto;
+        } else {
+            console.error(`El precio del producto "${producto.nombre_producto}" no es válido: ${producto.precio_unitario}`);
+        }
+    });
+
+    // Línea después de los productos
+    doc.line(10, yPosition + 10, 70, yPosition + 10); // Línea después de los productos
+
+    // Total de la venta
+    doc.text(`Total: $${totalVenta.toFixed(2)}`, 14, yPosition + 15);
+    doc.text(`Cantidad de productos: ${cantidadProductos}`, 14, yPosition + 25);
+
+    // Guardar el documento PDF
+    doc.save('ticket_venta.pdf');
+});
+
+
+
+
+    $('#ventaExitosaModal').on('hidden.bs.modal', function() {
+        $('#tableD').empty();
         $('#codigo').val('');
         $('#producto').val('');
         $('#cantidad').val('');
-
-        // Resetear los productos seleccionados y el total
         productosSeleccionados = [];
         total = 0;
-
-        // Actualizar el total mostrado
         $('#total').text(total.toFixed(2));
     });
 });
