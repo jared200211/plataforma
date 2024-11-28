@@ -128,189 +128,214 @@
 
 <script>
       
-    $(document).ready(function() {
-        let productos = []; // Aquí almacenaremos los productos
-        let productosSeleccionados = []; // Productos que se han agregado a la tabla
-        let total = 0; // Total de la venta
+      $(document).ready(function() {
+    let productos = []; // Aquí almacenaremos los productos
+    let productosSeleccionados = []; // Productos que se han agregado a la tabla
+    let total = 0; // Total de la venta
 
-        // Función para cargar productos desde la base de datos
-        function cargarProductos() {
-            $.ajax({
-                url: 'conexioon.php', // Cambia esto por la URL de tu endpoint que devuelva los productos
-                method: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    productos = data;
-                    // Rellenar el select de productos
-                    let options = '<option selected disabled>Selecciona un producto</option>';
-                    productos.forEach(function(producto) {
-                        options += `<option value="${producto.id_producto}">${producto.nombre_producto} - $${producto.precio_unitario}</option>`;
-                    });
-                    $('#producto').html(options);
-                },
-                error: function() {
-                    alert('Error al cargar los productos.');
-                }
-            });
-        }
-
-        // Llamar a la función para cargar productos al iniciar la página
-        cargarProductos();
-
-        // Función para agregar un producto a la tabla
-        $('#agregar').click(function() {
-            let codigo = $('#codigo').val().trim();
-            let productoId = $('#producto').val();
-            let cantidad = parseInt($('#cantidad').val());
-
-            if (!cantidad || cantidad <= 0) {
-                alert('Por favor ingresa una cantidad válida.');
-                return;
-            }
-
-            if ((codigo && productoId) || (!codigo && !productoId)) {
-                alert('Por favor, selecciona un solo método: código o producto.');
-                return;
-            }
-
-            let productoSeleccionado;
-            if (codigo) {
-                // Buscar producto por código
-                productoSeleccionado = productos.find(producto => producto.codigo === codigo);
-            } else if (productoId) {
-                // Buscar producto por ID
-                productoSeleccionado = productos.find(producto => producto.id_producto == productoId);
-            }
-
-            if (productoSeleccionado) {
-                // Agregar producto a la tabla
-                let importe = productoSeleccionado.precio_unitario * cantidad;
-                productosSeleccionados.push({
-                    id_producto: productoSeleccionado.id_producto,
-                    nombre_producto: productoSeleccionado.nombre_producto,
-                    cantidad: cantidad,
-                    precio_unitario: productoSeleccionado.precio_unitario,
-                    total_producto: importe
+    // Función para cargar productos desde la base de datos
+    function cargarProductos() {
+        $.ajax({
+            url: 'conexioon.php', // Cambia esto por la URL de tu endpoint que devuelva los productos
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                productos = data;
+                // Rellenar el select de productos
+                let options = '<option selected disabled>Selecciona un producto</option>';
+                productos.forEach(function(producto) {
+                    options += `<option value="${producto.id_producto}">${producto.nombre_producto} - $${producto.precio_unitario}</option>`;
                 });
-
-                // Actualizar la tabla y el total
-                actualizarTabla();
-                $('#codigo').val(''); // Limpiar código
-                $('#producto').val(''); // Limpiar selección de producto
-                $('#cantidad').val(''); // Limpiar cantidad
-            } else {
-                alert('Producto no encontrado.');
+                $('#producto').html(options);
+            },
+            error: function() {
+                alert('Error al cargar los productos.');
             }
         });
+    }
 
-        // Función para actualizar la tabla y el total
-        function actualizarTabla() {
-            let tableBody = $('#tableD');
-            tableBody.empty();
-            total = 0;
-            productosSeleccionados.forEach((producto, index) => {
-                tableBody.append(`
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${producto.nombre_producto}</td>
-                        <td>${producto.cantidad}</td>
-                        <td>$${producto.precio_unitario}</td>
-                        <td>$${producto.total_producto.toFixed(2)}</td>
-                        <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto(${index})">Eliminar</button></td>
-                    </tr>
-                `);
-                total += producto.total_producto;
-            });
+    // Llamar a la función para cargar productos al iniciar la página
+    cargarProductos();
 
-            $('#total').text(total.toFixed(2));
+    // Función para agregar un producto a la tabla
+    $('#agregar').click(function() {
+        let codigo = $('#codigo').val().trim();
+        let productoId = $('#producto').val();
+        let cantidad = parseInt($('#cantidad').val());
+
+        if (!cantidad || cantidad <= 0) {
+            alert('Por favor ingresa una cantidad válida.');
+            return;
         }
 
-        // Función para eliminar un producto de la tabla
-        window.eliminarProducto = function(index) {
-            productosSeleccionados.splice(index, 1);
-            actualizarTabla();
-        };
+        if ((codigo && productoId) || (!codigo && !productoId)) {
+            alert('Por favor, selecciona un solo método: código o producto.');
+            return;
+        }
 
-        // Función para realizar la venta
-        $('#realizarVenta').click(function() {
-            if (productosSeleccionados.length === 0) {
-                alert('No hay productos en la venta.');
-                return;
-            }
+        let productoSeleccionado;
+        if (codigo) {
+            // Buscar producto por código
+            productoSeleccionado = productos.find(producto => producto.codigo === codigo);
+        } else if (productoId) {
+            // Buscar producto por ID
+            productoSeleccionado = productos.find(producto => producto.id_producto == productoId);
+        }
 
-            let vendedor = $('#vendedor').val();
-            let tipoPago = $('#tipoPago').val();
-
-            // Enviar datos de la venta al servidor
-            $.ajax({
-                url: 'realizar_venta.php', // Cambia esto por la URL de tu endpoint para guardar la venta
-                method: 'POST',
-                data: {
-                    vendedor: vendedor,
-                    tipo_pago: tipoPago,
-                    total: total,
-                    productos: productosSeleccionados
-                },
-                success: function(response) {
-                    let modal = new bootstrap.Modal(document.getElementById('ventaExitosaModal'));
-                    modal.show(); // Mostrar el modal de éxito
-                    // Limpiar la venta
-                    productosSeleccionados = [];
-                    actualizarTabla();
-                },
-                error: function() {
-                    alert('Error al realizar la venta.');
-                }
+        if (productoSeleccionado) {
+            // Agregar producto a la tabla
+            let importe = productoSeleccionado.precio_unitario * cantidad;
+            productosSeleccionados.push({
+                id_producto: productoSeleccionado.id_producto,
+                nombre_producto: productoSeleccionado.nombre_producto,
+                cantidad: cantidad,
+                precio_unitario: productoSeleccionado.precio_unitario,
+                total_producto: importe
             });
+
+            // Actualizar la tabla y el total
+            actualizarTabla();
+            $('#codigo').val(''); // Limpiar código
+            $('#producto').val(''); // Limpiar selección de producto
+            $('#cantidad').val(''); // Limpiar cantidad
+        } else {
+            alert('Producto no encontrado.');
+        }
+    });
+
+    // Función para actualizar la tabla y el total
+    function actualizarTabla() {
+        let tableBody = $('#tableD');
+        tableBody.empty();
+        total = 0;
+        productosSeleccionados.forEach((producto, index) => {
+            tableBody.append(`
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${producto.nombre_producto}</td>
+                    <td>${producto.cantidad}</td>
+                    <td>$${producto.precio_unitario}</td>
+                    <td>$${producto.total_producto.toFixed(2)}</td>
+                    <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto(${index})">Eliminar</button></td>
+                </tr>
+            `);
+            total += producto.total_producto;
+        });
+
+        $('#total').text(total.toFixed(2));
+    }
+
+    // Función para eliminar un producto de la tabla
+    window.eliminarProducto = function(index) {
+        productosSeleccionados.splice(index, 1);
+        actualizarTabla();
+    };
+
+    // Función para realizar la venta
+    $('#realizarVenta').click(function() {
+        if (productosSeleccionados.length === 0) {
+            alert('No hay productos en la venta.');
+            return;
+        }
+
+        let vendedor = $('#vendedor').val();
+        let tipoPago = $('#tipoPago').val();
+
+        // Enviar datos de la venta al servidor
+        $.ajax({
+            url: 'realizar_venta.php', // Cambia esto por la URL de tu endpoint para guardar la venta
+            method: 'POST',
+            data: {
+                vendedor: vendedor,
+                tipo_pago: tipoPago,
+                total: total,
+                productos: productosSeleccionados
+            },
+            success: function(response) {
+                // Mostrar el modal de éxito, pero sin permitir que se cierre
+                let modal = new bootstrap.Modal(document.getElementById('ventaExitosaModal'), {
+                    backdrop: 'static', // Evita que se cierre al hacer clic fuera
+                    keyboard: false // Evita que se cierre al presionar ESC
+                });
+                modal.show(); // Mostrar el modal de éxito
+            },
+            error: function() {
+                alert('Error al realizar la venta.');
+            }
         });
     });
 
     // Función para generar el PDF del ticket
-$('#btnTicket').click(function() {
-    // Crear un objeto PDF con jsPDF
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    // Definir la fecha y hora actual
-    const fechaHora = new Date();
-    const fecha = fechaHora.toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+    $('#btnTicket').click(function() {
+        // Asegurarse de que productosSeleccionados está definido
+        if (productosSeleccionados.length === 0) {
+            alert('No hay productos seleccionados para generar el ticket.');
+            return;
+        }
+
+        // Crear un objeto PDF con jsPDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Definir la fecha y hora actual
+        const fechaHora = new Date();
+        const fecha = fechaHora.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        const hora = fechaHora.toLocaleTimeString('es-ES');
+        
+        // Título del ticket
+        doc.setFontSize(18);
+        doc.text('Grupo Industrial Ibarra', 14, 10);
+        
+        // Fecha y hora
+        doc.setFontSize(12);
+        doc.text(`Fecha: ${fecha}`, 14, 20);
+        doc.text(`Hora: ${hora}`, 14, 25);
+        
+        // Información de la venta
+        doc.text('Detalle de la venta:', 14, 35);
+        let yPosition = 45; // Posición inicial para los productos
+        
+        let cantidadProductos = productosSeleccionados.length;
+        let totalVenta = 0;
+
+        // Recorrer los productos seleccionados y agregar al PDF
+        productosSeleccionados.forEach((producto, index) => {
+            doc.text(`${index + 1}. ${producto.nombre_producto}`, 14, yPosition);
+            doc.text(`Cantidad: ${producto.cantidad}`, 100, yPosition);
+            doc.text(`$${producto.total_producto.toFixed(2)}`, 140, yPosition);
+            yPosition += 10;
+            totalVenta += producto.total_producto;
+        });
+
+        // Total de la venta
+        doc.text(`Total: $${totalVenta.toFixed(2)}`, 14, yPosition + 10);
+        doc.text(`Cantidad de productos: ${cantidadProductos}`, 14, yPosition + 20);
+
+        // Descargar el PDF
+        doc.save('ticket_venta.pdf');
     });
-    const hora = fechaHora.toLocaleTimeString('es-ES');
-    
-    // Título del ticket
-    doc.setFontSize(18);
-    doc.text('Grupo Industrial Ibarra', 14, 10);
-    
-    // Fecha y hora
-    doc.setFontSize(12);
-    doc.text(`Fecha: ${fecha}`, 14, 20);
-    doc.text(`Hora: ${hora}`, 14, 25);
-    
-    // Información de la venta
-    doc.text('Detalle de la venta:', 14, 35);
-    let yPosition = 45; // Posición inicial para los productos
-    
-    let cantidadProductos = productosSeleccionados.length;
-    let totalVenta = 0;
 
-    // Recorrer los productos seleccionados y agregar al PDF
-    productosSeleccionados.forEach((producto, index) => {
-        doc.text(`${index + 1}. ${producto.nombre_producto}`, 14, yPosition);
-        doc.text(`Cantidad: ${producto.cantidad}`, 100, yPosition);
-        doc.text(`$${producto.total_producto.toFixed(2)}`, 140, yPosition);
-        yPosition += 10;
-        totalVenta += producto.total_producto;
+    // Limpiar los productos cuando el usuario hace clic en "Ok" del modal
+    $('#ventaExitosaModal').on('hidden.bs.modal', function() {
+        // Limpiar el tbody
+        $('#tableD').empty();
+
+        // Limpiar los campos de código, select de productos y cantidad
+        $('#codigo').val('');
+        $('#producto').val('');
+        $('#cantidad').val('');
+
+        // Resetear los productos seleccionados y el total
+        productosSeleccionados = [];
+        total = 0;
+
+        // Actualizar el total mostrado
+        $('#total').text(total.toFixed(2));
     });
-
-    // Total de la venta
-    doc.text(`Total: $${totalVenta.toFixed(2)}`, 14, yPosition + 10);
-    doc.text(`Cantidad de productos: ${cantidadProductos}`, 14, yPosition + 20);
-
-    // Descargar el PDF
-    doc.save('ticket_venta.pdf');
 });
 
     
