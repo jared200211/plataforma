@@ -50,7 +50,9 @@ body {
             </li>
 
             <li class="list_item list_item--click">
+             <span class="arrow"></span>
                 <div class="list_button list_button--click">
+                    
                     <img src="./assets/ven.svg" class="list_img">
                     <a href="#" class="nav_link">Ventas</a>
                     <img src="./assets/flecha.svg" class="list_arrow">
