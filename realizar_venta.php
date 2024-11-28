@@ -1,5 +1,5 @@
 <?php
-// Ruta: ruta_a_tu_api_o_php_de_venta.php
+
 
 try {
     // Conectar a la base de datos con PDO

@@ -21,6 +21,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 </head>
 <body>
 <main>
@@ -93,10 +95,31 @@
             </div>
         </div>
         <div>
-            <button type="button" class="btn btn-primary me-3">Comprobante</button>
+            <!-- <button type="button" class="btn btn-primary me-3">Comprobante</button> -->
             <button type="button" class="btn btn-success" id="realizarVenta">Realizar Venta</button>
         </div>
     </div>
+
+    <!-- Modal de éxito -->
+<div class="modal fade" id="ventaExitosaModal" tabindex="-1" aria-labelledby="ventaExitosaLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ventaExitosaLabel">¡Venta realizada con éxito!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        La venta se ha registrado correctamente.
+      </div>
+      <div class="modal-footer">
+      <button type="button" class="btn btn-primary" id="btnTicket">Ticket</button>
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Ok</button>
+       
+      </div>
+    </div>
+  </div>
+</div>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
@@ -104,6 +127,7 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <script>
+      
     $(document).ready(function() {
         let productos = []; // Aquí almacenaremos los productos
         let productosSeleccionados = []; // Productos que se han agregado a la tabla
@@ -228,7 +252,8 @@
                     productos: productosSeleccionados
                 },
                 success: function(response) {
-                    alert('Venta realizada con éxito.');
+                    let modal = new bootstrap.Modal(document.getElementById('ventaExitosaModal'));
+                    modal.show(); // Mostrar el modal de éxito
                     // Limpiar la venta
                     productosSeleccionados = [];
                     actualizarTabla();
@@ -239,6 +264,56 @@
             });
         });
     });
+
+    // Función para generar el PDF del ticket
+$('#btnTicket').click(function() {
+    // Crear un objeto PDF con jsPDF
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Definir la fecha y hora actual
+    const fechaHora = new Date();
+    const fecha = fechaHora.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    const hora = fechaHora.toLocaleTimeString('es-ES');
+    
+    // Título del ticket
+    doc.setFontSize(18);
+    doc.text('Grupo Industrial Ibarra', 14, 10);
+    
+    // Fecha y hora
+    doc.setFontSize(12);
+    doc.text(`Fecha: ${fecha}`, 14, 20);
+    doc.text(`Hora: ${hora}`, 14, 25);
+    
+    // Información de la venta
+    doc.text('Detalle de la venta:', 14, 35);
+    let yPosition = 45; // Posición inicial para los productos
+    
+    let cantidadProductos = productosSeleccionados.length;
+    let totalVenta = 0;
+
+    // Recorrer los productos seleccionados y agregar al PDF
+    productosSeleccionados.forEach((producto, index) => {
+        doc.text(`${index + 1}. ${producto.nombre_producto}`, 14, yPosition);
+        doc.text(`Cantidad: ${producto.cantidad}`, 100, yPosition);
+        doc.text(`$${producto.total_producto.toFixed(2)}`, 140, yPosition);
+        yPosition += 10;
+        totalVenta += producto.total_producto;
+    });
+
+    // Total de la venta
+    doc.text(`Total: $${totalVenta.toFixed(2)}`, 14, yPosition + 10);
+    doc.text(`Cantidad de productos: ${cantidadProductos}`, 14, yPosition + 20);
+
+    // Descargar el PDF
+    doc.save('ticket_venta.pdf');
+});
+
+    
 </script>
 
 
