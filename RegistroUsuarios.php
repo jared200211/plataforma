@@ -377,36 +377,46 @@ if ($buscar) {
 
     <script>
     $(document).ready(function() {
-    $('#formRegistro').on('submit', function(e) {
-        e.preventDefault(); // Evitar el comportamiento por defecto del formulario
+        
+        $('#formRegistro').on('submit', function (e) {
+    e.preventDefault();
 
-        $.ajax({
-            url: 'RegistroUsuarios.php', // El archivo PHP actual procesará la solicitud
-            type: 'POST',
-            data: $(this).serialize(), // Obtener todos los datos del formulario
-            success: function(response) {
-                // Recargar la tabla después de insertar los datos
-                console.log(response); 
-                $('#todoList').load(location.href + " #todoList");
-                alert('Registro exitoso');
-                
-                $('#formRegistro')[0].reset(); 
-                actualizarTabla();
-                $('#staticBackdrop').modal('hide'); // Ocultar el modal después del registro
-                // $('body').removeClass('modal-open');
-                // $('.modal-backdrop').remove();
-            },
-            error: function() {
-                alert('Error al registrar');
-            }
-        });
+    $.ajax({
+        url: 'RegistroUsuarios.php',
+        type: 'POST',
+        data: $(this).serialize(),
+        success: function (response) {
+            console.log(response);
+            $('#todoList').load(location.href + " #todoList");
+            alert('Registro exitoso');
+
+            // Resetea el formulario
+            $('#formRegistro')[0].reset();
+
+            // Actualiza la tabla y oculta el modal
+            actualizarTabla();
+            $('#staticBackdrop').modal('hide');
+
+            // Ajustar aria-hidden
+            $('#staticBackdrop').attr('aria-hidden', 'true');
+        },
+        error: function () {
+            alert('Error al registrar');
+        }
     });
 });
+});
 
-$('#staticBackdrop').on('hidden.bs.modal', function () {
-        $('#formRegistro')[0].reset(); // Limpiar todos los campos del formulario
-    });
+// Al abrir el modal, asegura que aria-hidden se actualice
+$('#staticBackdrop').on('show.bs.modal', function () {
+    $(this).attr('aria-hidden', 'false');
+});
 
+// Al cerrar el modal, asegura que aria-hidden se actualice
+$('#staticBackdrop').on('hide.bs.modal', function () {
+    $(this).attr('aria-hidden', 'true');
+    $('#formRegistro')[0].reset(); // Limpia el formulario al cerrar
+});
 function actualizarTabla() {
     $.ajax({
         url: 'RegistroUsuarios.php', // Si la tabla ya se genera en este mismo archivo, puedes dejar el URL vacío

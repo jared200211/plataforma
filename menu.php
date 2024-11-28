@@ -164,28 +164,37 @@ body {
     <script src="./main.js"></script>
     <script src="./js/jquery-3.7.1.min.js"></script>
 
-    <script>
+
+        <script>
+    $(document).ready(function() {
         // Manejar los clics del menú y cargar contenido dinámico
-        $(document).ready(function() {
-            $('.menu-option').on('click', function(e) {
-                e.preventDefault();  // Prevenir el comportamiento por defecto del enlace
+        $('.menu-option').on('click', function(e) {
+            e.preventDefault();  // Prevenir el comportamiento por defecto del enlace
 
-                var page = $(this).data('page');  // Obtener la página que se debe cargar
+            // Eliminar clase activa de todos los elementos del menú
+            $('.menu-option').removeClass('active');
 
-                // Hacer la petición AJAX para cargar el contenido
-                $.ajax({
-                    url: page,  // Página PHP a cargar
-                    type: 'GET',
-                    success: function(response) {
-                        $('#content').html(response);  // Insertar el contenido en el div
-                    },
-                    error: function() {
-                        $('#content').html('<p>Ocurrió un error al cargar la página.</p>');
-                    }
-                });
+            // Agregar clase activa al elemento seleccionado
+            $(this).addClass('active');
+
+            var page = $(this).data('page');  // Obtener la página que se debe cargar
+
+            // Hacer la petición AJAX para cargar el contenido
+            $.ajax({
+                url: page,  // Página PHP a cargar
+                type: 'GET',
+                success: function(response) {
+                    $('#content').html(response);  // Insertar el contenido en el div
+                },
+                error: function() {
+                    $('#content').html('<p>Ocurrió un error al cargar la página.</p>');
+                }
             });
         });
-    </script>
+    });
+</script>
+
+   
 
 </body>
 </html>
