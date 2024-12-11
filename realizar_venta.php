@@ -15,12 +15,12 @@ try {
     // Iniciar la transacción
     $pdo->beginTransaction();
 
-    // Insertar la venta en la tabla 'ventas'
+
     $stmt = $pdo->prepare("INSERT INTO ventas (tipo_pago, Vendedor, total) VALUES (?, ?, ?)");
     $stmt->execute([$tipo_pago, $vendedor, $total]);
-    $id_venta = $pdo->lastInsertId(); // Obtener el ID de la venta recién insertada
+    $id_venta = $pdo->lastInsertId(); 
 
-    // Insertar los productos de la venta en la tabla 'productos_venta'
+    
     $stmt = $pdo->prepare("INSERT INTO productos_venta (id_venta, id_producto, nombre_producto, cantidad, precio_unitario, total_producto) VALUES (?, ?, ?, ?, ?, ?)");
 
     foreach ($productos as $producto) {

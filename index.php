@@ -93,14 +93,13 @@
     let email = document.getElementById("Email").value;
     let password = document.getElementById("contrasenia").value;
 
-    // Ocultar mensajes de error previos
     document.getElementById("logErrorEmail").style.display = "none";
     document.getElementById("logErrorPassword").style.display = "none";
     document.getElementById("logErrorGeneral").style.display = "none";
 
-    // Enviar los datos con AJAX
+  
     $.ajax({
-      url: 'login.php', // Ruta al script PHP
+      url: 'login.php', 
       type: 'POST',
       dataType: 'json',
       data: {
@@ -108,17 +107,17 @@
         contrasenia: password
       },
       success: function(response) {
-        // Si el login es exitoso
+        
         if (response.success) {
-          window.location.href = 'menu.php'; // Redirigir al menú
+          window.location.href = 'menu.php'; 
         } else {
-          // Si hay un error, mostrarlo en el campo general
+          
           document.getElementById("logErrorGeneral").style.display = "block";
           document.getElementById("logErrorGeneral").innerText = response.message;
         }
       },
       error: function(xhr, status, error) {
-        // Si ocurre algún error inesperado
+        
         document.getElementById("logErrorGeneral").style.display = "block";
         document.getElementById("logErrorGeneral").innerText = "Ocurrió un error inesperado.";
       }

@@ -65,7 +65,7 @@ body {
                         <a href="#" class="nav_link nav_link--inside">Nuevo Servicio</a>
                     </li>
                     <li class="list_inside">
-                        <a href="#" class="nav_link nav_link--inside">Estoy dentro</a>
+                        <!-- <a href="#" class="nav_link nav_link--inside">Estoy dentro</a> -->
                     </li>
                 </ul>
             </li>
@@ -156,9 +156,8 @@ body {
     </nav>
     
     <div id="content">
-        <!-- Contenido dinámico se cargará aquí -->
-        <h1>Bienvenido a Grupo Ibarra</h1>
-        <p>Selecciona una opción del menú.</p>
+        
+        
     </div>
 
     <script src="./main.js"></script>
@@ -167,24 +166,18 @@ body {
 
         <script>
     $(document).ready(function() {
-        // Manejar los clics del menú y cargar contenido dinámico
+        
         $('.menu-option').on('click', function(e) {
-            e.preventDefault();  // Prevenir el comportamiento por defecto del enlace
-
-            // Eliminar clase activa de todos los elementos del menú
+            e.preventDefault();  
             $('.menu-option').removeClass('active');
-
-            // Agregar clase activa al elemento seleccionado
             $(this).addClass('active');
 
-            var page = $(this).data('page');  // Obtener la página que se debe cargar
-
-            // Hacer la petición AJAX para cargar el contenido
+            var page = $(this).data('page');  
             $.ajax({
-                url: page,  // Página PHP a cargar
+                url: page,  
                 type: 'GET',
                 success: function(response) {
-                    $('#content').html(response);  // Insertar el contenido en el div
+                    $('#content').html(response);  
                 },
                 error: function() {
                     $('#content').html('<p>Ocurrió un error al cargar la página.</p>');

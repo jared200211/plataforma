@@ -37,8 +37,7 @@
                 <form id="searchForm" class="d-flex">
                     <!-- Filtro de búsqueda por empleado -->
                     <input id="buscar" name="buscar" class="form-control me-2" type="search" placeholder="Buscar Empleado" aria-label="Search">
-                    
-                    <!-- Filtros de fechas -->
+
                     
                     <button type="submit" class="btn btn-outline-success">Buscar</button>
                 </form>

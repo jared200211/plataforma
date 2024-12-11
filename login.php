@@ -8,10 +8,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $Email = isset($_POST['Email']) ? htmlspecialchars($_POST['Email']) : null;
     $contrasenia = isset($_POST['contrasenia']) ? $_POST['contrasenia'] : null;
 
-    // Array para devolver la respuesta
+    
     $response = ['success' => false, 'message' => ''];
 
-    // Verificar que los campos no estén vacíos
+   
     if (empty($Email) || empty($contrasenia)) {
         $response['message'] = "Ingrese un Usuario y Contraseña válidos.";
         echo json_encode($response);
@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     }
 
     try {
-        // Conectar con la base de datos
+       
         $pdo = new PDO('mysql:host=' . $servidor . ';dbname=' . $bd, $user, $pass);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
